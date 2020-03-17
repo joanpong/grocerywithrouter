@@ -1,7 +1,7 @@
 <template>
   <div class="headerStyle">
         <nav>
-          <h1>{{ title }}</h1>
+          <h1>{{title}}</h1>
           <ul>
              <li><router-link to="/" exact>List</router-link></li>
              <li><router-link to="/add" exact>Add Item</router-link></li>
@@ -15,9 +15,7 @@
 export default {
   
   data(){
-    return{
-        msg: 'Grocery List'
-        }
+
   },
   props:{
     title:{

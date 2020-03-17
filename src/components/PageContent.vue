@@ -4,11 +4,11 @@
         <li v-for="item in itemsList" v-bind:key="item.name" >
 
             <h2 v-on:click="item.show = !item.show">{{item.name}}</h2>
+            <h3 v-on:click="item.show = !item.show">{{item.category}}</h3>
             <img v-bind:src="item.image" v-show="item.show"/>
             <buttonComponent></buttonComponent>
+            <button name="delete" v-bind:id="item.id" v-on:click="deleteItem(index,item)">Delete</button>
                 
-                
-            
         </li>
     </ul>
   </div>
@@ -17,19 +17,41 @@
 
 <script>
 import ButtonComponent from './ButtonComponent.vue'
+import database from '../firebase.js'
 export default {
   data(){
     return{
-        itemsList: [{name:'Eggs',image:'./assets/eggs.jpg',show:false},
-                    {name:'Bread',image:'/assets/bread.jfif',show:false},
-                    {name:'Jam',image:'/assets/jam.jfif',show:false},
-                    {name:'CornFlakes',image:'/assets/cornflakes.jfif',show:false},
-                    {name:'Milk',image:'/assets/milk.jfif',show:false},
-                    {name:'Juice',image:'/assets/juice.jfif',show:false}]
+        itemsList: []
         }
   },
   components:{
     'buttonComponent':ButtonComponent
+  },
+  methods:{
+    fetchItems:function(){
+      let item={} 
+      // Get all the items from DB
+      database.collection('items').get().then((querySnapShot)=>{
+        // Loop through each item
+        querySnapShot.forEach(doc=>{
+          item=doc.data()
+          item.show=false
+          item.id=doc.id
+          this.itemsList.push(item)
+        })
+      })
+    },
+    deleteItem: function(index,item){
+      // Deleting from DB (deleted item still displayed on webpage)
+      database.collection('items').doc(item.id).delete()
+      // Deleting from the itemsList Array (now deleted item not shown on webpage)
+      this.itemsList.splice(index,1)
+      // Msg to be displayed. Can be made as an alert
+      console.log("Item deleted successfully")
+    }
+  },
+  created(){
+    this.fetchItems()
   }
 }
 </script>
